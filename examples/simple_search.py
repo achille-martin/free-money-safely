@@ -60,7 +60,8 @@ if __name__=="__main__":
     HOME_DIR = os.path.expanduser( '~' )
     APP_DIR = HOME_DIR + '/Documents/free-money-safely'
     LOG_DIR = APP_DIR + '/log'
-    os.mkdir(LOG_DIR)
+    if not os.path.exists(LOG_DIR):
+        os.mkdir(LOG_DIR)
     log_file_path = LOG_DIR + '/simple_search-{}.log'.format(datetime.datetime.strftime(datetime.datetime.now(), '%Y_%m_%d-%H_%M_%S'))
     logging_level = 'DEBUG'
 
