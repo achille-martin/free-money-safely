@@ -6,27 +6,25 @@ from selenium.webdriver.common.by import By
 import logging as log_tool
 import datetime
 import os
+import time
 
 # Main function
 def main():
     
     logger.debug('SimpleSearch::main - Entering function...')
-
-    # Instantiate driver and browser
-    logger.debug('SimpleSearch::main - Selenium driver being instantiated for Firefox browser')
-    driver = webdriver.Firefox()
-    logger.debug('SimpleSearch::main - Selenium driver instantiated for Firefox browser')
-
+    
     # Open webpage in headfull mode
     target_webpage = "https://dev.to"
     logger.debug('SimpleSearch::main - Selenium trying to open webpage: ' + str(target_webpage))
     driver.get(target_webpage)
+    time.sleep(default_wait_s)
     logger.info('SimpleSearch::main - STEP 1 - Selenium opened webpage: ' + str(target_webpage))
 
     # Confirm desired page has been reached
     try:
         logger.debug('SimpleSearch::main - Selenium trying to confirm webpage is the desired one')
         assert "DEV" in driver.title
+        time.sleep(default_wait_s)
         logger.debug('SimpleSearch::main - Opened webpage confirmed to be the desired webpage')
     except Exception as e:
         raise Exception('The opened webpage might differ from the desired webpage: ' + str(target_webpage))
@@ -40,6 +38,7 @@ def main():
     sentence_to_search = "Hello"
     logger.debug('SimpleSearch::main - Selenium trying to input ' + str(sentence_to_search) + ' in search bar')
     search_bar.send_keys(sentence_to_search)
+    time.sleep(default_wait_s)
     logger.debug('SimpleSearch::main - Selenium input ' + str(sentence_to_search) + ' in search bar')
 
     # Start the search
@@ -48,9 +47,29 @@ def main():
     search_button = driver.find_element(By.CSS_SELECTOR, "button.c-btn.c-btn--icon-alone.absolute.inset-px.left-auto.mt-0.py-0")
     logger.debug('SimpleSearch::main - Selenium found button to start search')
     search_button.click()
+    time.sleep(default_wait_s)
     logger.debug('SimpleSearch::main - Selenium clicked on search button:\n' + str(search_button))
     logger.info('SimpleSearch::main - STEP 2 - Selenium found results for sentence to search: ' + str(sentence_to_search))
 
+    # Get articles on webpage
+    # Tip: get multiple elements at once using `find_elements` rather than `find_element`
+    logger.debug('SimpleSearch::main - Selenium looking for articles elements')
+    articles = driver.find_elements(By.TAG_NAME, "article")
+    logger.debug('SimpleSearch::main - Selenium found articles element:\n' + str(articles))
+
+    # Extract information from first article on webpage
+    logger.debug('SimpleSearch::main - Selenium looking for top article title')
+    top_article = articles[0]
+    temp_element = top_article.find_element(By.CLASS_NAME, "crayons-story__indention")
+    top_article_text = temp_element.find_element(By.TAG_NAME, "a").text
+    logger.info('SimpleSearch::main - STEP 3 - Selenium found title of top article:\n' + str(top_article_text))
+
+    # Close the driver and terminate the session
+    logger.debug('SimpleSearch::main - Selenium trying to terminate the session')
+    driver.close()
+    driver.quit()
+    logger.info('SimpleSearch::main - FINAL STEP - Selenium terminated the session')
+    
     logger.debug('SimpleSearch::main - ...exiting function')
 
 # Entry point
@@ -73,7 +92,16 @@ if __name__=="__main__":
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 
+    # Instantiate driver and browser
+    # Tip: add sleep timers to let Selenium access all functionalities of a tool or page
+    default_wait_s = 5
+    logger.debug('SimpleSearch::main - Selenium driver being instantiated for Firefox browser')
+    driver = webdriver.Firefox()
+    time.sleep(default_wait_s)
+    logger.debug('SimpleSearch::main - Selenium driver instantiated for Firefox browser')
+
     # Call the main function
     logger.info('SimpleSearch::Entrypoint - Logger instantiated and set to ' + str(logging_level))
+    logger.info('SimpleSearch::Entrypoint - Selenium driver instantiated and set with default action wait time of ' + str(default_wait_s) + ' second(s)')
     main()
 
