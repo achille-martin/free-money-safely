@@ -95,13 +95,17 @@ if __name__=="__main__":
     # Instantiate driver and browser
     # Tip: add sleep timers to let Selenium access all functionalities of a tool or page
     default_wait_s = 5
-    logger.debug('SimpleSearch::main - Selenium driver being instantiated for Firefox browser')
-    driver = webdriver.Firefox()
+    logger.debug('SimpleSearch::Entrypoint - Selenium driver being instantiated for Firefox browser')
+    fireFoxOptions = webdriver.FirefoxOptions()
+    driver_mode = "HEADFULL"
+    if driver_mode == "HEADLESS":
+        fireFoxOptions.set_headless()
+    driver = webdriver.Firefox(firefox_options=fireFoxOptions)
     time.sleep(default_wait_s)
-    logger.debug('SimpleSearch::main - Selenium driver instantiated for Firefox browser')
+    logger.debug('SimpleSearch::Entrypoint - Selenium driver instantiated for Firefox browser')
 
     # Call the main function
     logger.info('SimpleSearch::Entrypoint - Logger instantiated and set to ' + str(logging_level))
-    logger.info('SimpleSearch::Entrypoint - Selenium driver instantiated and set with default action wait time of ' + str(default_wait_s) + ' second(s)')
+    logger.info('SimpleSearch::Entrypoint - Selenium driver instantiated for Firefox browser in ' + str(driver_mode) + ' mode and set with default action wait time of ' + str(default_wait_s) + ' second(s)')
     main()
 
